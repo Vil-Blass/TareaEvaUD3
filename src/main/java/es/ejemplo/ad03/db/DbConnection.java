@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public final class DbConnection {
     private static final String DEFAULT_URL =
-            "jdbc:mysql://localhost:3306/formacion?serverTimezone=UTC&useSSL=false";
+            "jdbc:mysql://localhost:3306/dbformacion?serverTimezone=UTC&useSSL=false";
 
     private DbConnection() {
     }

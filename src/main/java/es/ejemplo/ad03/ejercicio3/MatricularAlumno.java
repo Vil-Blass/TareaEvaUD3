@@ -102,8 +102,8 @@ public final class MatricularAlumno {
     private static Integer lockCourseAndGetCapacity(Connection connection, int courseId)
             throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT a.capacidad FROM cursos c JOIN aulas a ON a.id = c.aula_id "
-                        + "WHERE c.id = ? FOR UPDATE")) {
+                "SELECT a.capacidad FROM cursos c JOIN aulas a ON a.id_aula = c.id_aula "
+                        + "WHERE c.id_curso = ? FOR UPDATE")) {
             statement.setInt(1, courseId);
             try (ResultSet result = statement.executeQuery()) {
                 return result.next() ? result.getInt("capacidad") : null;
@@ -114,7 +114,7 @@ public final class MatricularAlumno {
     private static boolean isAlreadyEnrolled(Connection connection, String dni, int courseId)
             throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT dni FROM matriculas WHERE dni = ? AND curso_id = ? FOR UPDATE")) {
+                "SELECT dni FROM matriculas WHERE dni = ? AND id_curso = ? FOR UPDATE")) {
             statement.setString(1, dni);
             statement.setInt(2, courseId);
             try (ResultSet result = statement.executeQuery()) {
@@ -126,7 +126,7 @@ public final class MatricularAlumno {
     private static int countEnrollmentsForUpdate(Connection connection, int courseId) throws SQLException {
         try (PreparedStatement statement =
                      connection.prepareStatement(
-                             "SELECT dni FROM matriculas WHERE curso_id = ? FOR UPDATE")) {
+                             "SELECT dni FROM matriculas WHERE id_curso = ? FOR UPDATE")) {
             statement.setInt(1, courseId);
             try (ResultSet result = statement.executeQuery()) {
                 int count = 0;
@@ -151,7 +151,7 @@ public final class MatricularAlumno {
     private static void insertEnrollment(Connection connection, String dni, int courseId)
             throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO matriculas (dni, curso_id, fecha_matricula) VALUES (?, ?, CURRENT_DATE)")) {
+                "INSERT INTO matriculas (dni, id_curso, fecha_matricula) VALUES (?, ?, CURRENT_DATE)")) {
             statement.setString(1, dni);
             statement.setInt(2, courseId);
             statement.executeUpdate();

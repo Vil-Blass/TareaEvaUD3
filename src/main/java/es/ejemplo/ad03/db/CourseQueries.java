@@ -8,26 +8,26 @@ import java.sql.Statement;
 
 public final class CourseQueries {
     private static final String COURSE_OCCUPANCY_SQL = """
-            SELECT c.id, c.titulo, c.fecha, COUNT(m.dni) AS matriculados,
+            SELECT c.id_curso AS id, c.titulo, c.fecha, COUNT(m.dni) AS matriculados,
                    a.capacidad, a.nombre AS aula, a.edificio
             FROM cursos c
-            JOIN aulas a ON a.id = c.aula_id
-            LEFT JOIN matriculas m ON m.curso_id = c.id
-            GROUP BY c.id, c.titulo, c.fecha, a.capacidad, a.nombre, a.edificio
-            ORDER BY c.fecha, c.id
+            JOIN aulas a ON a.id_aula = c.id_aula
+            LEFT JOIN matriculas m ON m.id_curso = c.id_curso
+            GROUP BY c.id_curso, c.titulo, c.fecha, a.capacidad, a.nombre, a.edificio
+            ORDER BY c.fecha, c.id_curso
             """;
 
     private static final String AVAILABLE_SEATS_SQL = """
-            SELECT c.id, c.titulo, a.capacidad - COUNT(m.dni) AS plazas_libres
+            SELECT c.id_curso AS id, c.titulo, a.capacidad - COUNT(m.dni) AS plazas_libres
             FROM cursos c
-            JOIN aulas a ON a.id = c.aula_id
-            LEFT JOIN matriculas m ON m.curso_id = c.id
-            GROUP BY c.id, c.titulo, a.capacidad
-            ORDER BY c.fecha, c.id
+            JOIN aulas a ON a.id_aula = c.id_aula
+            LEFT JOIN matriculas m ON m.id_curso = c.id_curso
+            GROUP BY c.id_curso, c.titulo, a.capacidad, c.fecha
+            ORDER BY c.fecha, c.id_curso
             """;
 
     private static final String COURSE_NAMES_SQL =
-            "SELECT id, titulo, fecha FROM cursos ORDER BY fecha, id";
+            "SELECT id_curso AS id, titulo, fecha FROM cursos ORDER BY fecha, id_curso";
 
     private CourseQueries() {
     }
@@ -78,7 +78,7 @@ public final class CourseQueries {
 
     public static boolean exists(Connection connection, int courseId) throws SQLException {
         try (PreparedStatement statement =
-                     connection.prepareStatement("SELECT 1 FROM cursos WHERE id = ?")) {
+                     connection.prepareStatement("SELECT 1 FROM cursos WHERE id_curso = ?")) {
             statement.setInt(1, courseId);
             try (ResultSet result = statement.executeQuery()) {
                 return result.next();
